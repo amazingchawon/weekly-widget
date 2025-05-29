@@ -2,39 +2,63 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>주차 위젯</title>
-    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white text-gray-800 flex flex-col items-center justify-center min-h-screen px-4">
-    <div class="w-full max-w-md p-6 rounded-2xl shadow-lg bg-gray-100">
-        <h1 class="text-2xl font-bold text-center mb-4">📆 주차 위젯</h1>
-        <p class="text-center text-gray-600 mb-2">기준 날짜를 선택하세요</p>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-md text-center">
+        <h1 class="text-xl font-bold mb-4">오늘은</h1>
+        <p class="mb-2 text-gray-600">기준 날짜를 선택하세요</p>
         <input
             type="date"
             id="start-date"
-            class="block w-full text-center px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 mb-6"
+            class="block mx-auto px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
         />
-        <div id="week-number" class="text-center text-lg font-semibold text-blue-700">
-            📅 기준 날짜를 선택하세요.
+        <button
+            id="reset"
+            class="hidden text-blue-600 underline mb-4"
+            type="button"
+        >
+            날짜 다시 선택하기
+        </button>
+        <div
+            id="week-number"
+            class="text-lg font-semibold text-blue-700 min-h-[2rem]"
+        >
+            기준 날짜를 선택하세요.
         </div>
     </div>
 
     <script>
         const input = document.getElementById('start-date')
         const output = document.getElementById('week-number')
+        const resetBtn = document.getElementById('reset')
 
+        // 저장된 날짜 불러오기
         const savedDate = localStorage.getItem('startDate')
         if (savedDate) {
             input.value = savedDate
             updateWeekNumber(new Date(savedDate))
+            input.classList.add('hidden')
+            resetBtn.classList.remove('hidden')
         }
 
         input.addEventListener('change', () => {
             const selectedDate = input.value
+            if (!selectedDate) return
             localStorage.setItem('startDate', selectedDate)
             updateWeekNumber(new Date(selectedDate))
+            input.classList.add('hidden')
+            resetBtn.classList.remove('hidden')
+        })
+
+        resetBtn.addEventListener('click', () => {
+            input.classList.remove('hidden')
+            resetBtn.classList.add('hidden')
+            output.textContent = '📅 기준 날짜를 선택하세요.'
+            localStorage.removeItem('startDate')
+            input.value = ''
         })
 
         function updateWeekNumber(startDate) {
@@ -50,7 +74,7 @@
             if (week < 1) {
                 output.innerText = '📅 아직 시작 전입니다.'
             } else {
-                output.innerText = `🗓️ 지금은 <strong>${week}</strong>주차입니다.`
+                output.innerHTML = `🗓️ 지금은 <span class="font-bold">${week}</span>주차입니다.`
             }
         }
     </script>
