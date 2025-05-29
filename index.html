@@ -7,27 +7,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-md text-center">
-        <h1 class="text-xl font-bold mb-4">오늘은</h1>
-        <p class="mb-2 text-gray-600">기준 날짜를 선택하세요</p>
-        <input
-            type="date"
-            id="start-date"
-            class="block mx-auto px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
-        />
+    <div class="flex flex-row items-center justify-between bg-white p-6 rounded-xl w-full max-w-md text-center border border-gray-200">
+        <div
+            id="week-number"
+            class="text-xl font-semibold min-h-[2rem]"
+        >
+            날짜를 선택해주세요
+        </div>
         <button
             id="reset"
-            class="hidden text-blue-600 underline mb-4"
             type="button"
+            class="hidden h-10 px-3 text-sm text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
         >
             날짜 다시 선택하기
         </button>
-        <div
-            id="week-number"
-            class="text-lg font-semibold text-blue-700 min-h-[2rem]"
-        >
-            기준 날짜를 선택하세요.
-        </div>
+        <input
+            type="date"
+            id="start-date"
+            class="h-10 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors duration-200 text-gray-700"
+        />
     </div>
 
     <script>
@@ -35,15 +33,19 @@
         const output = document.getElementById('week-number')
         const resetBtn = document.getElementById('reset')
 
-        // 저장된 날짜 불러오기
+        // 로컬 스토리지에서 저장된 날짜 불러오기
         const savedDate = localStorage.getItem('startDate')
         if (savedDate) {
             input.value = savedDate
             updateWeekNumber(new Date(savedDate))
             input.classList.add('hidden')
             resetBtn.classList.remove('hidden')
+        } else {
+            input.classList.remove('hidden')
+            resetBtn.classList.add('hidden')
         }
 
+        // 날짜 선택 시 처리
         input.addEventListener('change', () => {
             const selectedDate = input.value
             if (!selectedDate) return
@@ -53,14 +55,16 @@
             resetBtn.classList.remove('hidden')
         })
 
+        // 다시 선택하기 버튼 클릭 시 처리
         resetBtn.addEventListener('click', () => {
             input.classList.remove('hidden')
             resetBtn.classList.add('hidden')
-            output.textContent = '📅 기준 날짜를 선택하세요.'
+            output.textContent = '날짜를 선택해주세요'
             localStorage.removeItem('startDate')
             input.value = ''
         })
 
+        // 주차 계산 및 표시 함수
         function updateWeekNumber(startDate) {
             const now = new Date()
             if (isNaN(startDate)) {
@@ -74,7 +78,7 @@
             if (week < 1) {
                 output.innerText = '📅 아직 시작 전입니다.'
             } else {
-                output.innerHTML = `🗓️ 지금은 <span class="font-bold">${week}</span>주차입니다.`
+                output.innerHTML = `${week}주차`
             }
         }
     </script>
